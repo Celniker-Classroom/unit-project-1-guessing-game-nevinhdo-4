@@ -4,6 +4,7 @@ let guessCount = 0;
 let totalWins = 0;
 let totalGuesses = 0;
 let scores = 0;
+let currentRange = 3;
 
 const playerName = prompt("Please enter your name below");
 
@@ -17,23 +18,41 @@ document.getElementById("playBtn").addEventListener("click", function(){
             range = parseInt(radios[i].value)
         }
     }
+    currentRange = range;
 
     //round setup
     //pick answer
     answer = Math.floor(Math.random() * range) + 1;
     //disable and engange buttons and radio choices
-    document.getElementById("msg").textContent = playerName + ", guess a number between 1 and" + range + "!";
+    document.getElementById("msg").textContent = playerName + ", pick a number 1-" + range + "!";
     document.getElementById("guess").value = "";
     document.getElementById("guessBtn").disabled = false;
     document.getElementById("giveUpBtn").disabled = false;
     document.getElementById("playBtn").disabled = true;
+})
 
-    for (let i=0; i < radios.length; i++) {
-        if (radios[i].checked){
-            range = parseInt(radios[i].value);  
+
+//feedback function
+function giveFeedback(num, answer, hotValue, warmValue) {
+    if (num > answer) {
+        if (num - answer < hotValue) {
+            document.getElementById("msg").textContent = "Hot! You're very close! Try lower";
+        } else if (num - answer < warmValue) {
+            document.getElementById("msg").textContent = "Warm! Too high, try again.";
+        } else {
+            document.getElementById("msg").textContent = "Cold! Too high, try again.";
+        }
+    } else {
+        if (answer - num < hotValue) {
+            document.getElementById("msg").textContent = "Hot! You're very close! Try higher";
+        } else if (answer - num < warmValue) {
+            document.getElementById("msg").textContent = "Warm! Too low, try again.";
+        } else {
+            document.getElementById("msg").textContent = "Cold! Too low, try again.";
         }
     }
-})
+}
+
 //guessing
 document.getElementById("guessBtn").addEventListener("click", function(){
     let input = parseInt(document.getElementById("guess").value);
@@ -46,7 +65,6 @@ document.getElementById("guessBtn").addEventListener("click", function(){
 
 
     guessCount++;
-    let diff = Math.abs(num - answer);  
 
     //correct
     if (num === answer){
@@ -54,23 +72,13 @@ document.getElementById("guessBtn").addEventListener("click", function(){
     }
 
     //incorrecct
-    if (num > answer){
-        if (num - answer < 2){
-            document.getElementById("msg").textContent = "Hot! You're very close! Try lower";
-        } else if (num - answer < 3){
-            document.getElementById("msg").textContent = "Warm! Too high, try again.";
+    if (num !== answer) {
+        if (currentRange === 3) {
+            giveFeedback(num, answer, 1, 2);
+        } else if (currentRange === 10) {
+            giveFeedback(num, answer, 2, 3);
         } else {
-            document.getElementById("msg").textContent = "Cold! Too high, try again.";
-        }
-    } else {
-        if (num < answer)
-         if (answer - num < 2){
-            document.getElementById("msg").textContent = "Hot! You're very close! Try higher";
-        } else if (answer - num < 3){
-            document.getElementById("msg").textContent = "Warm! Too low, try again.";
-        } else {
-            document.getElementById("msg").textContent = "Cold! Too low, try again.";
+            giveFeedback(num, answer, 6, 17);
         }
     }
-
 })
