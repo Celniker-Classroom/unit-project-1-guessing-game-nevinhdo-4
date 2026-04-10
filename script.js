@@ -136,23 +136,16 @@ document.getElementById("playBtn").addEventListener("click", function(){
 
 
 //feedback function
-function giveFeedback(num, answer, hotValue, warmValue) {
-    if (num > answer) {
-        if (num - answer < hotValue) {
-            setMessage(playerName + ", hot! You're very close! Try lower.");
-        } else if (num - answer < warmValue) {
-            setMessage(playerName + ", warm! Too high, try again.");
-        } else {
-            setMessage(playerName + ", cold! Too high, try again.");
-        }
+function giveFeedback(num, answer) {
+    const difference = Math.abs(num - answer);
+    const direction = num > answer ? "lower" : "higher";
+
+    if (difference <= 2) {
+        setMessage(playerName + ", hot! You're very close! Try " + direction + ".");
+    } else if (difference <= 5) {
+        setMessage(playerName + ", warm! Try " + direction + ".");
     } else {
-        if (answer - num < hotValue) {
-            setMessage(playerName + ", hot! You're very close! Try higher.");
-        } else if (answer - num < warmValue) {
-            setMessage(playerName + ", warm! Too low, try again.");
-        } else {
-            setMessage(playerName + ", cold! Too low, try again.");
-        }
+        setMessage(playerName + ", cold! Try " + direction + ".");
     }
 }
 
@@ -185,13 +178,7 @@ document.getElementById("guessBtn").addEventListener("click", function(){
 
     //incorrecct
     if (num !== answer) {
-        if (currentRange === 3) {
-            giveFeedback(num, answer, 1, 2);
-        } else if (currentRange === 10) {
-            giveFeedback(num, answer, 2, 3);
-        } else {
-            giveFeedback(num, answer, 6, 17);
-        }
+        giveFeedback(num, answer);
     }
 })
 
