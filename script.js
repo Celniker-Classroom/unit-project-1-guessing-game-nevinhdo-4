@@ -3,7 +3,7 @@ let answer = 0;
 let guessCount = 0;
 let totalWins = 0;
 let totalGuesses = 0;
-let scores = 0;
+let scores = [];
 let currentRange = 3;
 
 const rawPlayerName = prompt("Please enter your name below") || "Player";
@@ -11,6 +11,18 @@ const trimmedPlayerName = rawPlayerName.trim();
 const playerName = trimmedPlayerName
     ? trimmedPlayerName.charAt(0).toUpperCase() + trimmedPlayerName.slice(1).toLowerCase()
     : "Player";
+
+function updateLeaderboard() {
+    scores.push(guessCount);
+    scores.sort(function(a, b) {
+        return a - b;
+    });
+
+    let leaderboardItems = document.getElementsByName("leaderboard");
+    for (let i = 0; i < leaderboardItems.length; i++) {
+        leaderboardItems[i].textContent = scores[i] !== undefined ? scores[i] : "";
+    }
+}
 
 //Play
 //get level
@@ -77,6 +89,7 @@ document.getElementById("guessBtn").addEventListener("click", function(){
         totalGuesses += guessCount;
         const averageScore = totalGuesses / totalWins;
 
+        updateLeaderboard();
         document.getElementById("wins").textContent = "Total wins: " + totalWins;
         document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
         document.getElementById("msg").textContent = "Correct! " + playerName + " got it in " + guessCount + " guesses!";
