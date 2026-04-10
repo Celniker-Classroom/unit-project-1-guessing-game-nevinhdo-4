@@ -11,6 +11,7 @@ let totalRoundTime = 0;
 let roundsPlayed = 0;
 let playerName = "Player";
 let hasPromptedForName = false;
+let rainbowTimeoutId = null;
 
 function formatPlayerName(name) {
     const trimmedName = (name || "").trim();
@@ -37,16 +38,6 @@ function initializeName() {
 
 function setMessage(message) {
     document.getElementById("msg").textContent = message;
-
-    const feedback = document.getElementById("feedback");
-    const result = document.getElementById("result");
-
-    if (feedback) {
-        feedback.textContent = message;
-    }
-    if (result) {
-        result.textContent = message;
-    }
 }
 
 function setGuessButtonsDisabled(disabled) {
@@ -56,6 +47,24 @@ function setGuessButtonsDisabled(disabled) {
     if (submitButton) {
         submitButton.disabled = disabled;
     }
+}
+
+function celebrateWinTitle() {
+    const title = document.getElementById("gameTitle");
+    if (!title) {
+        return;
+    }
+
+    title.classList.add("rainbow-win");
+
+    if (rainbowTimeoutId !== null) {
+        clearTimeout(rainbowTimeoutId);
+    }
+
+    rainbowTimeoutId = setTimeout(function() {
+        title.classList.remove("rainbow-win");
+        rainbowTimeoutId = null;
+    }, 3000);
 }
 
 function setLevelButtonsDisabled(disabled) {
@@ -204,6 +213,7 @@ function makeGuess() {
         updateScore(guessCount);
         updateTimers(new Date().getTime());
         setMessage("Correct! " + playerName + " got it in " + guessCount + " guesses!");
+        celebrateWinTitle();
         reset();
         return;
     }
@@ -239,4 +249,6 @@ if (submitButton) {
     });
 }
 
+initializeName();
+setMessage(playerName + ", select a level to start!");
 renderLeaderboard();

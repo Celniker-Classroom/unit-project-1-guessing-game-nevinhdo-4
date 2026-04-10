@@ -44,12 +44,37 @@
         background-color: #1b1b1b;
         border-color: #444;
       }
+
+      #gameTitle {
+        transition: all 0.3s ease;
+      }
+
+      .rainbow-win {
+        background: linear-gradient(90deg, #d98c8c, #d9b38c, #d9d18c, #9fd9a8, #8cbfd9, #a78cd9, #d18cd9, #d98c8c);
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: rainbowShift 6s ease-in-out infinite;
+      }
+
+      @keyframes rainbowShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
     </style>
     <script src="script.js" defer></script>
   </head>
   <body>
     <button id="darkModeBtn">Toggle Dark Mode</button>
-    <h1>Guessing Game</h1>
+    <h1 id="gameTitle">Guessing Game</h1>
 
     <div class="bubble-box">
       <p id="date"></p>
@@ -64,14 +89,13 @@
       <button id="playBtn">Play</button>
     </div>
 
-    <h3 id="msg">Select a Level</h3>
-    <input type="text" id="guess" placeholder="Enter your guess">
-    <button id="guessBtn" disabled>Guess</button>
-    <button id="submit" disabled>Submit Guess</button>
-    <button id="giveUpBtn" disabled>Give Up</button>
-
-    <div id="feedback"></div>
-    <div id="result"></div>
+    <div class="bubble-box">
+      <h3 id="msg">Select a Level</h3>
+      <input type="text" id="guess" placeholder="Enter your guess">
+      <button id="guessBtn" disabled>Guess</button>
+      <button id="submit" disabled>Submit Guess</button>
+      <button id="giveUpBtn" disabled>Give Up</button>
+    </div>
 
     <div class="bubble-box">
       <h3>Stats</h3>
