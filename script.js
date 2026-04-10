@@ -23,6 +23,7 @@ document.getElementById("playBtn").addEventListener("click", function(){
         }
     }
     currentRange = range;
+    guessCount = 0;
 
     //round setup
     //pick answer
@@ -72,7 +73,16 @@ document.getElementById("guessBtn").addEventListener("click", function(){
 
     //correct
     if (num === answer){
+        totalWins++;
+        totalGuesses += guessCount;
+        const averageScore = totalGuesses / totalWins;
+
+        document.getElementById("wins").textContent = "Total wins: " + totalWins;
+        document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
         document.getElementById("msg").textContent = "Correct! " + playerName + " got it in " + guessCount + " guesses!";
+        document.getElementById("guessBtn").disabled = true;
+        document.getElementById("giveUpBtn").disabled = true;
+        document.getElementById("playBtn").disabled = false;
     }
 
     //incorrecct
