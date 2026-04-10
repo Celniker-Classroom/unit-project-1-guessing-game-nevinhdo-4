@@ -10,6 +10,7 @@ let fastestTime = null;
 let totalRoundTime = 0;
 let roundsPlayed = 0;
 let playerName = "Player";
+let hasPromptedForName = false;
 
 function formatPlayerName(name) {
     const trimmedPlayerName = (name || "").trim();
@@ -19,12 +20,18 @@ function formatPlayerName(name) {
 }
 
 function initializeGame() {
-    if (playerName !== "Player") {
+    if (hasPromptedForName) {
         return;
     }
 
+    hasPromptedForName = true;
+
     if (typeof prompt === "function") {
-        playerName = formatPlayerName(prompt("Please enter your name below") || "Player");
+        try {
+            playerName = formatPlayerName(prompt("Please enter your name below") || "Player");
+        } catch {
+            playerName = "Player";
+        }
     }
 }
 
