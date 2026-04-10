@@ -197,7 +197,17 @@ document.getElementById("guessBtn").addEventListener("click", function(){
 })
 
 document.getElementById("giveUpBtn").addEventListener("click", function() {
+    guessCount = currentRange;
+    totalGuesses += guessCount;
+    totalWins += 1;
+
+    updateLeaderboard();
     updateTimeStats();
+
+    document.getElementById("wins").textContent = "Total wins: " + totalWins;
+    const averageScore = totalGuesses / totalWins;
+    document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
+
     setMessage(playerName + ", you gave up! The answer was " + answer + ".");
     endRound();
 })
