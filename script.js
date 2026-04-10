@@ -170,21 +170,19 @@ function play() {
     setLevelButtonsDisabled(true);
 }
 
-function giveFeedback(num, correctAnswer) {
-    const difference = Math.abs(num - correctAnswer);
-
+function giveFeedback(num, correctAnswer, hotValue, warmValue) {
     if (num > correctAnswer) {
-        if (difference <= 2) {
+        if (num - correctAnswer < hotValue) {
             setMessage(playerName + ", hot! Too high, try lower.");
-        } else if (difference <= 5) {
+        } else if (num - correctAnswer < warmValue) {
             setMessage(playerName + ", warm! Too high, try lower.");
         } else {
             setMessage(playerName + ", cold! Too high, try lower.");
         }
     } else {
-        if (difference <= 2) {
+        if (correctAnswer - num < hotValue) {
             setMessage(playerName + ", hot! Too low, try higher.");
-        } else if (difference <= 5) {
+        } else if (correctAnswer - num < warmValue) {
             setMessage(playerName + ", warm! Too low, try higher.");
         } else {
             setMessage(playerName + ", cold! Too low, try higher.");
@@ -210,7 +208,13 @@ function makeGuess() {
         return;
     }
 
-    giveFeedback(num, answer);
+    if (currentRange === 3) {
+        giveFeedback(num, answer, 1, 2);
+    } else if (currentRange === 10) {
+        giveFeedback(num, answer, 2, 3);
+    } else {
+        giveFeedback(num, answer, 6, 17);
+    }
 }
 
 function giveUp() {
@@ -224,6 +228,9 @@ function giveUp() {
 document.getElementById("playBtn").addEventListener("click", play);
 document.getElementById("guessBtn").addEventListener("click", makeGuess);
 document.getElementById("giveUpBtn").addEventListener("click", giveUp);
+document.getElementById("darkModeBtn").addEventListener("click", function() {
+    document.body.classList.toggle("dark-mode");
+});
 
 const submitButton = document.getElementById("submit");
 if (submitButton) {
