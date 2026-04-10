@@ -156,52 +156,52 @@ document.getElementById("playBtn").addEventListener("click", function(){
 })
 
 
-//feedback function
-function giveFeedback(num, answer) {
-    const difference = Math.abs(num - answer);
-    const direction = num > answer ? "lower" : "higher";
-
-    if (difference <= 2) {
-        setMessage(playerName + ", hot! You're very close! Try " + direction + ".");
-    } else if (difference <= 5) {
-        setMessage(playerName + ", warm! Try " + direction + ".");
-    } else {
-        setMessage(playerName + ", cold! Try " + direction + ".");
-    }
-}
-
 //guessing
 document.getElementById("guessBtn").addEventListener("click", function(){
-    let input = parseInt(document.getElementById("guess").value);
-    let num = parseInt(input);
+     let input = parseInt(document.getElementById("guess").value);
+     let num = parseInt(input);
 
-    if (isNaN(num)){
-        setMessage(playerName + ", please enter a valid number.");
-        return; 
-    }
+     if (isNaN(num)){
+         setMessage(playerName + ", please enter a valid number.");
+         return; 
+     }
 
+     guessCount++;
 
-    guessCount++;
+     //correct
+     if (num === answer){
+         totalWins++;
+         totalGuesses += guessCount;
+         const averageScore = totalGuesses / totalWins;
 
-    //correct
-    if (num === answer){
-        totalWins++;
-        totalGuesses += guessCount;
-        const averageScore = totalGuesses / totalWins;
+         updateLeaderboard();
+         updateTimeStats();
+         document.getElementById("wins").textContent = "Total wins: " + totalWins;
+         document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
+         setMessage("Correct! " + playerName + " got it in " + guessCount + " guesses!");
+         endRound();
+         return;
+     }
 
-        updateLeaderboard();
-        updateTimeStats();
-        document.getElementById("wins").textContent = "Total wins: " + totalWins;
-        document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
-        setMessage("Correct! " + playerName + " got it in " + guessCount + " guesses!");
-        endRound();
-    }
-
-    //incorrecct
-    if (num !== answer) {
-        giveFeedback(num, answer);
-    }
+     //incorrect - provide feedback
+     if (num !== answer) {
+         giveFeedback(num, answer);
+     }
 })
+
+//feedback function - THIS IS CORRECT
+function giveFeedback(num, answer) {
+     const difference = Math.abs(num - answer);
+     const direction = num > answer ? "lower" : "higher";
+
+     if (difference <= 2) {
+         setMessage(playerName + ", hot! You're very close! Try " + direction + ".");
+     } else if (difference <= 5) {
+         setMessage(playerName + ", warm! Try " + direction + ".");
+     } else {
+         setMessage(playerName + ", cold! Try " + direction + ".");
+     }
+}
 
 document.getElementById("giveUpBtn").addEventListener("click", function() {
     guessCount = currentRange;
