@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>JavaScript Number Guessing Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guessing Game</title>
     <script src="script.js" defer></script>
   </head>
   <body>
+    <h1>Guessing Game</h1>
     <p id="date"></p>
 
     <h3>Level</h3>
@@ -15,9 +18,13 @@
     <button id="playBtn">Play</button>
 
     <h3 id="msg">Select a Level</h3>
-    <input type="text" id="guess">
+    <input type="text" id="guess" placeholder="Enter your guess">
     <button id="guessBtn" disabled>Guess</button>
+    <button id="submit" disabled>Submit Guess</button>
     <button id="giveUpBtn" disabled>Give Up</button>
+
+    <div id="feedback"></div>
+    <div id="result"></div>
 
     <h3>Stats</h3>
     <p id="wins">Total wins: 0</p>

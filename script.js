@@ -16,6 +16,29 @@ const playerName = trimmedPlayerName
     ? trimmedPlayerName.charAt(0).toUpperCase() + trimmedPlayerName.slice(1).toLowerCase()
     : "Player";
 
+function setMessage(message) {
+    document.getElementById("msg").textContent = message;
+
+    const feedback = document.getElementById("feedback");
+    const result = document.getElementById("result");
+
+    if (feedback) {
+        feedback.textContent = message;
+    }
+    if (result) {
+        result.textContent = message;
+    }
+}
+
+function setGuessButtonsDisabled(disabled) {
+    document.getElementById("guessBtn").disabled = disabled;
+
+    const submitButton = document.getElementById("submit");
+    if (submitButton) {
+        submitButton.disabled = disabled;
+    }
+}
+
 function getDaySuffix(day) {
     if (day >= 11 && day <= 13) {
         return "th";
@@ -81,7 +104,7 @@ function updateTimeStats() {
 }
 
 function endRound() {
-    document.getElementById("guessBtn").disabled = true;
+    setGuessButtonsDisabled(true);
     document.getElementById("giveUpBtn").disabled = true;
     document.getElementById("playBtn").disabled = false;
 }
@@ -104,9 +127,9 @@ document.getElementById("playBtn").addEventListener("click", function(){
     //pick answer
     answer = Math.floor(Math.random() * range) + 1;
     //disable and engange buttons and radio choices
-    document.getElementById("msg").textContent = playerName + ", pick a number 1-" + range + "!";
+    setMessage(playerName + ", pick a number 1-" + range + "!");
     document.getElementById("guess").value = "";
-    document.getElementById("guessBtn").disabled = false;
+    setGuessButtonsDisabled(false);
     document.getElementById("giveUpBtn").disabled = false;
     document.getElementById("playBtn").disabled = true;
 })
@@ -116,19 +139,19 @@ document.getElementById("playBtn").addEventListener("click", function(){
 function giveFeedback(num, answer, hotValue, warmValue) {
     if (num > answer) {
         if (num - answer < hotValue) {
-            document.getElementById("msg").textContent = playerName + ", hot! You're very close! Try lower.";
+            setMessage(playerName + ", hot! You're very close! Try lower.");
         } else if (num - answer < warmValue) {
-            document.getElementById("msg").textContent = playerName + ", warm! Too high, try again.";
+            setMessage(playerName + ", warm! Too high, try again.");
         } else {
-            document.getElementById("msg").textContent = playerName + ", cold! Too high, try again.";
+            setMessage(playerName + ", cold! Too high, try again.");
         }
     } else {
         if (answer - num < hotValue) {
-            document.getElementById("msg").textContent = playerName + ", hot! You're very close! Try higher.";
+            setMessage(playerName + ", hot! You're very close! Try higher.");
         } else if (answer - num < warmValue) {
-            document.getElementById("msg").textContent = playerName + ", warm! Too low, try again.";
+            setMessage(playerName + ", warm! Too low, try again.");
         } else {
-            document.getElementById("msg").textContent = playerName + ", cold! Too low, try again.";
+            setMessage(playerName + ", cold! Too low, try again.");
         }
     }
 }
@@ -139,7 +162,7 @@ document.getElementById("guessBtn").addEventListener("click", function(){
     let num = parseInt(input);
 
     if (isNaN(num)){
-        document.getElementById("msg").textContent = playerName + ", please enter a valid number.";
+        setMessage(playerName + ", please enter a valid number.");
         return; 
     }
 
@@ -156,7 +179,7 @@ document.getElementById("guessBtn").addEventListener("click", function(){
         updateTimeStats();
         document.getElementById("wins").textContent = "Total wins: " + totalWins;
         document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
-        document.getElementById("msg").textContent = "Correct! " + playerName + " got it in " + guessCount + " guesses!";
+        setMessage("Correct! " + playerName + " got it in " + guessCount + " guesses!");
         endRound();
     }
 
@@ -174,6 +197,13 @@ document.getElementById("guessBtn").addEventListener("click", function(){
 
 document.getElementById("giveUpBtn").addEventListener("click", function() {
     updateTimeStats();
-    document.getElementById("msg").textContent = playerName + ", you gave up! The answer was " + answer + ".";
+    setMessage(playerName + ", you gave up! The answer was " + answer + ".");
     endRound();
 })
+
+const submitButton = document.getElementById("submit");
+if (submitButton) {
+    submitButton.addEventListener("click", function() {
+        document.getElementById("guessBtn").click();
+    });
+}
