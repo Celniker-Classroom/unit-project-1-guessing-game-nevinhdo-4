@@ -6,7 +6,11 @@ let totalGuesses = 0;
 let scores = 0;
 let currentRange = 3;
 
-const playerName = prompt("Please enter your name below");
+const rawPlayerName = prompt("Please enter your name below") || "Player";
+const trimmedPlayerName = rawPlayerName.trim();
+const playerName = trimmedPlayerName
+    ? trimmedPlayerName.charAt(0).toUpperCase() + trimmedPlayerName.slice(1).toLowerCase()
+    : "Player";
 
 //Play
 //get level
@@ -36,19 +40,19 @@ document.getElementById("playBtn").addEventListener("click", function(){
 function giveFeedback(num, answer, hotValue, warmValue) {
     if (num > answer) {
         if (num - answer < hotValue) {
-            document.getElementById("msg").textContent = "Hot! You're very close! Try lower";
+            document.getElementById("msg").textContent = playerName + ", hot! You're very close! Try lower.";
         } else if (num - answer < warmValue) {
-            document.getElementById("msg").textContent = "Warm! Too high, try again.";
+            document.getElementById("msg").textContent = playerName + ", warm! Too high, try again.";
         } else {
-            document.getElementById("msg").textContent = "Cold! Too high, try again.";
+            document.getElementById("msg").textContent = playerName + ", cold! Too high, try again.";
         }
     } else {
         if (answer - num < hotValue) {
-            document.getElementById("msg").textContent = "Hot! You're very close! Try higher";
+            document.getElementById("msg").textContent = playerName + ", hot! You're very close! Try higher.";
         } else if (answer - num < warmValue) {
-            document.getElementById("msg").textContent = "Warm! Too low, try again.";
+            document.getElementById("msg").textContent = playerName + ", warm! Too low, try again.";
         } else {
-            document.getElementById("msg").textContent = "Cold! Too low, try again.";
+            document.getElementById("msg").textContent = playerName + ", cold! Too low, try again.";
         }
     }
 }
@@ -59,7 +63,7 @@ document.getElementById("guessBtn").addEventListener("click", function(){
     let num = parseInt(input);
 
     if (isNaN(num)){
-        document.getElementById("msg").textContent = "Please enter a valid number.";
+        document.getElementById("msg").textContent = playerName + ", please enter a valid number.";
         return; 
     }
 
