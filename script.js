@@ -5,6 +5,10 @@ let totalWins = 0;
 let totalGuesses = 0;
 let scores = [];
 let currentRange = 3;
+let roundStartTime = null;
+let fastestTime = null;
+let totalRoundTime = 0;
+let roundsPlayed = 0;
 
 const rawPlayerName = prompt("Please enter your name below") || "Player";
 const trimmedPlayerName = rawPlayerName.trim();
@@ -61,6 +65,27 @@ function updateLeaderboard() {
     }
 }
 
+function updateTimeStats() {
+    if (roundStartTime === null) {
+        return;
+    }
+
+    const elapsedTime = new Date().getTime() - roundStartTime;
+    roundsPlayed++;
+    totalRoundTime += elapsedTime;
+    fastestTime = fastestTime === null ? elapsedTime : Math.min(fastestTime, elapsedTime);
+
+    document.getElementById("fastest").textContent = "Fastest Game: " + fastestTime;
+    document.getElementById("avgTime").textContent = "Average Time: " + Math.round(totalRoundTime / roundsPlayed);
+    roundStartTime = null;
+}
+
+function endRound() {
+    document.getElementById("guessBtn").disabled = true;
+    document.getElementById("giveUpBtn").disabled = true;
+    document.getElementById("playBtn").disabled = false;
+}
+
 //Play
 //get level
 document.getElementById("playBtn").addEventListener("click", function(){
@@ -73,6 +98,7 @@ document.getElementById("playBtn").addEventListener("click", function(){
     }
     currentRange = range;
     guessCount = 0;
+    roundStartTime = new Date().getTime();
 
     //round setup
     //pick answer
@@ -127,12 +153,11 @@ document.getElementById("guessBtn").addEventListener("click", function(){
         const averageScore = totalGuesses / totalWins;
 
         updateLeaderboard();
+        updateTimeStats();
         document.getElementById("wins").textContent = "Total wins: " + totalWins;
         document.getElementById("avgScore").textContent = "Average Score: " + averageScore;
         document.getElementById("msg").textContent = "Correct! " + playerName + " got it in " + guessCount + " guesses!";
-        document.getElementById("guessBtn").disabled = true;
-        document.getElementById("giveUpBtn").disabled = true;
-        document.getElementById("playBtn").disabled = false;
+        endRound();
     }
 
     //incorrecct
@@ -145,4 +170,10 @@ document.getElementById("guessBtn").addEventListener("click", function(){
             giveFeedback(num, answer, 6, 17);
         }
     }
+})
+
+document.getElementById("giveUpBtn").addEventListener("click", function() {
+    updateTimeStats();
+    document.getElementById("msg").textContent = playerName + ", you gave up! The answer was " + answer + ".";
+    endRound();
 })
