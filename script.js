@@ -12,6 +12,43 @@ const playerName = trimmedPlayerName
     ? trimmedPlayerName.charAt(0).toUpperCase() + trimmedPlayerName.slice(1).toLowerCase()
     : "Player";
 
+function getDaySuffix(day) {
+    if (day >= 11 && day <= 13) {
+        return "th";
+    }
+
+    if (day % 10 === 1) {
+        return "st";
+    }
+    if (day % 10 === 2) {
+        return "nd";
+    }
+    if (day % 10 === 3) {
+        return "rd";
+    }
+    return "th";
+}
+
+function updateDateTime() {
+    const now = new Date();
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    const monthName = months[now.getMonth()];
+    const day = now.getDate();
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    document.getElementById("date").textContent =
+        monthName + " " + day + getDaySuffix(day) + ", " + year + " " + hours + ":" + minutes + ":" + seconds;
+}
+
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
 function updateLeaderboard() {
     scores.push(guessCount);
     scores.sort(function(a, b) {
