@@ -12,6 +12,8 @@ let roundsPlayed = 0;
 let playerName = "Player";
 let hasPromptedForName = false;
 let rainbowTimeoutId = null;
+let stopwatchIntervalId = null;
+let audioContext = null;
 
 function formatPlayerName(name) {
     const trimmedName = (name || "").trim();
@@ -46,6 +48,78 @@ function setGuessButtonsDisabled(disabled) {
     const submitButton = document.getElementById("submit");
     if (submitButton) {
         submitButton.disabled = disabled;
+    }
+}
+
+function getAudioContext() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+        return null;
+    }
+
+    if (audioContext === null) {
+        audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume().catch(function() {
+            return null;
+        });
+    }
+
+    return audioContext;
+}
+
+function playClickSound() {
+    const ctx = getAudioContext();
+    if (!ctx) {
+        return;
+    }
+
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const startTime = ctx.currentTime;
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(700, startTime);
+    oscillator.frequency.exponentialRampToValueAtTime(480, startTime + 0.07);
+
+    gainNode.gain.setValueAtTime(0.0001, startTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.025, startTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.08);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.08);
+}
+
+function playWinHornSound() {
+    const ctx = getAudioContext();
+    if (!ctx) {
+        return;
+    }
+
+    const notes = [392, 523.25, 659.25];
+
+    for (let i = 0; i < notes.length; i++) {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        const startTime = ctx.currentTime + (i * 0.12);
+        const endTime = startTime + 0.28;
+
+        oscillator.type = "sawtooth";
+        oscillator.frequency.setValueAtTime(notes[i], startTime);
+        oscillator.frequency.exponentialRampToValueAtTime(notes[i] * 1.08, endTime);
+
+        gainNode.gain.setValueAtTime(0.0001, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.05, startTime + 0.03);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        oscillator.start(startTime);
+        oscillator.stop(endTime);
     }
 }
 
@@ -113,6 +187,67 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+function formatDuration(ms) {
+    return (ms / 1000).toFixed(1) + "s";
+}
+
+function setStopwatchTone(elapsedTime) {
+    const currentTime = document.getElementById("currentTime");
+    if (!currentTime) {
+        return;
+    }
+
+    currentTime.classList.remove("timer-neutral", "timer-fast", "timer-average", "timer-slow");
+
+    if (roundsPlayed === 0 || fastestTime === 0) {
+        currentTime.classList.add("timer-neutral");
+        return;
+    }
+
+    const averageTime = totalRoundTime / roundsPlayed;
+
+    if (elapsedTime <= fastestTime) {
+        currentTime.classList.add("timer-fast");
+    } else if (elapsedTime <= averageTime) {
+        currentTime.classList.add("timer-average");
+    } else {
+        currentTime.classList.add("timer-slow");
+    }
+}
+
+function updateLiveStopwatch() {
+    const currentTime = document.getElementById("currentTime");
+    if (!currentTime) {
+        return;
+    }
+
+    if (roundStartTime === null) {
+        currentTime.textContent = "Current Time: 0.0s";
+        setStopwatchTone(0);
+        return;
+    }
+
+    const elapsedTime = new Date().getTime() - roundStartTime;
+    currentTime.textContent = "Current Time: " + formatDuration(elapsedTime);
+    setStopwatchTone(elapsedTime);
+}
+
+function startStopwatch() {
+    if (stopwatchIntervalId !== null) {
+        clearInterval(stopwatchIntervalId);
+    }
+
+    updateLiveStopwatch();
+    stopwatchIntervalId = setInterval(updateLiveStopwatch, 100);
+}
+
+function stopStopwatch() {
+    if (stopwatchIntervalId !== null) {
+        clearInterval(stopwatchIntervalId);
+        stopwatchIntervalId = null;
+    }
+}
+
 function renderLeaderboard() {
     const leaderboardItems = document.getElementsByName("leaderboard");
     for (let i = 0; i < leaderboardItems.length; i++) {
@@ -139,12 +274,15 @@ function updateTimers(endMs) {
     }
 
     const elapsedTime = endMs - roundStartTime;
+    stopStopwatch();
     roundsPlayed++;
     totalRoundTime += elapsedTime;
     fastestTime = fastestTime === 0 ? elapsedTime : Math.min(fastestTime, elapsedTime);
 
-    document.getElementById("fastest").textContent = "Fastest Game: " + fastestTime;
-    document.getElementById("avgTime").textContent = "Average Time: " + Math.round(totalRoundTime / roundsPlayed);
+    document.getElementById("currentTime").textContent = "Current Time: " + formatDuration(elapsedTime);
+    setStopwatchTone(elapsedTime);
+    document.getElementById("fastest").textContent = "Fastest Game: " + formatDuration(fastestTime);
+    document.getElementById("avgTime").textContent = "Average Time: " + formatDuration(Math.round(totalRoundTime / roundsPlayed));
     roundStartTime = null;
 }
 
@@ -169,6 +307,7 @@ function play() {
     currentRange = range;
     guessCount = 0;
     roundStartTime = new Date().getTime();
+    startStopwatch();
     answer = Math.floor(Math.random() * range) + 1;
 
     setMessage(playerName + ", pick a number 1-" + range + "!");
@@ -213,6 +352,7 @@ function makeGuess() {
         updateScore(guessCount);
         updateTimers(new Date().getTime());
         setMessage("Correct! " + playerName + " got it in " + guessCount + " guesses!");
+        playWinHornSound();
         celebrateWinTitle();
         reset();
         return;
@@ -234,6 +374,10 @@ function giveUp() {
     setMessage(playerName + ", you gave up! The answer was " + answer + ".");
     reset();
 }
+
+document.querySelectorAll("button").forEach(function(button) {
+    button.addEventListener("pointerdown", playClickSound);
+});
 
 document.getElementById("playBtn").addEventListener("click", play);
 document.getElementById("guessBtn").addEventListener("click", makeGuess);

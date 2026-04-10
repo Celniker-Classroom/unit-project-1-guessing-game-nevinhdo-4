@@ -50,12 +50,33 @@
       }
 
       .rainbow-win {
-        background: linear-gradient(90deg, #d98c8c, #d9b38c, #d9d18c, #9fd9a8, #8cbfd9, #a78cd9, #d18cd9, #d98c8c);
+        background: linear-gradient(90deg, #e58f8f, #e8b07a, #e6d96f, #8fd8a5, #7fbfe6, #a98fe5, #de93d6, #e58f8f);
         background-size: 300% 100%;
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
         animation: rainbowShift 6s ease-in-out infinite;
+      }
+
+      #currentTime {
+        font-weight: bold;
+        transition: color 0.25s ease;
+      }
+
+      .timer-neutral {
+        color: inherit;
+      }
+
+      .timer-fast {
+        color: #2e8b57;
+      }
+
+      .timer-average {
+        color: #c7921d;
+      }
+
+      .timer-slow {
+        color: #c96a6a;
       }
 
       @keyframes rainbowShift {
@@ -99,6 +120,7 @@
 
     <div class="bubble-box">
       <h3>Stats</h3>
+      <p id="currentTime">Current Time: 0.0s</p>
       <p id="wins">Total wins: 0</p>
       <p id="avgScore">Average Score: </p>
       <p id="fastest">Fastest Game: </p>

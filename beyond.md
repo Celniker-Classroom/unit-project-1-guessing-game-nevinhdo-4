@@ -3,3 +3,5 @@ I made it so that depending on the difficulty, the game returns hot, cold, or wa
 I did some css styling to make the interface look nicer
 I added a dark mode button which you can press to turn the game to dark mode
 I made it so that the text changes and flashes rainbow color when u win
+Added a live stopwatch that turns red or green based on whether the player is faster or slower than their previous personal best
+I added a some sound effects for when you click a button and when you win
