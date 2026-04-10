@@ -9,12 +9,24 @@ let roundStartTime = null;
 let fastestTime = null;
 let totalRoundTime = 0;
 let roundsPlayed = 0;
+let playerName = "Player";
 
-const rawPlayerName = prompt("Please enter your name below") || "Player";
-const trimmedPlayerName = rawPlayerName.trim();
-const playerName = trimmedPlayerName
-    ? trimmedPlayerName.charAt(0).toUpperCase() + trimmedPlayerName.slice(1).toLowerCase()
-    : "Player";
+function formatPlayerName(name) {
+    const trimmedPlayerName = (name || "").trim();
+    return trimmedPlayerName
+        ? trimmedPlayerName.charAt(0).toUpperCase() + trimmedPlayerName.slice(1).toLowerCase()
+        : "Player";
+}
+
+function initializeGame() {
+    if (playerName !== "Player") {
+        return;
+    }
+
+    if (typeof prompt === "function") {
+        playerName = formatPlayerName(prompt("Please enter your name below") || "Player");
+    }
+}
 
 function setMessage(message) {
     document.getElementById("msg").textContent = message;
@@ -112,6 +124,8 @@ function endRound() {
 //Play
 //get level
 document.getElementById("playBtn").addEventListener("click", function(){
+    initializeGame();
+
     let radios = document.getElementsByName("level");
     let range = 3;
     for (let i=0; i < radios.length; i++) {
